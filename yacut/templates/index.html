@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %} Добавить мнение о фильме {% endblock %}
+{% block content %}
+  <main>
+    <section class="container my-5 px-4">
+      <h1 class="text-center"><span style="color:red">Ya</span>Cut</h1>
+      <p class="text-center my-4">
+        Создайте короткую ссылку автоматически или предложите свой вариант
+      </p>
+
+      <div class="container">
+        <div class="row my-3">
+          <div class="col-sm">
+          </div>
+          <div class="col-sm">
+            <form method="POST" novalidate>
+              {{ form.csrf_token }}
+              <div>
+                <div>
+                  {{ form.original(class="form-control form-control-lg py-2 mb-3", id="form-title",
+                    placeholder=form.original.label.text) }}
+                  <p>
+                    {% if form.original.errors %}
+                      {% for error in form.original.errors %}
+                        <span style="color:red">{{ error }}</span>
+                      {% endfor %}
+                    {% endif %}
+                  </p>
+                </div>
+                <div>
+                  {{ form.short(class="form-control form-control-lg py-2 mb-3", id="form-link",
+                    placeholder=form.short.label.text) }}
+                  <p>
+                    {% if form.short.errors %}
+                      {% for error in form.short.errors %}
+                        <span style="color:red">{{ error }}</span>
+                      {% endfor %}
+                    {% endif %} 
+                  </p>
+                </div>
+
+                <input type="submit" class="btn btn-primary" value="Создать">
+              </div>
+            </form>
+          </div>
+          <div class="col-sm">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  {{ message }}
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row ">
+          <div class="col-sm">
+          </div>
+          {% if form.short.data %}
+            <div class="col-sm">
+              <p class="text-center">
+              <h5 class="text-center">Ваша новая ссылка готова: <br> <a href="{{ url_for('redirection_view', short=form.short.data, _external=True) }}">{{ url_for('redirection_view', short=form.short.data, _external=True) }}</a></h5>
+              </p>
+            </div>
+          {% endif %}
+          <div class="col-sm">
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+  {% endblock %}
