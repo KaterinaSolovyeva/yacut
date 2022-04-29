@@ -1,9 +1,13 @@
+import re
+
 from flask import jsonify, request
 
 from . import app, db
 from .error_handlers import InvalidAPIUsage
 from .models import URL_map
 from .views import get_unique_short_id
+
+PATTERN = r'[a-zA-Z0-9]'
 
 
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
@@ -17,20 +21,26 @@ def get_original(short_id):
 @app.route('/api/id/', methods=['POST'])
 def add_short_link():
     data = request.get_json()
-    if 'url' not in data:
+    if data is None:
         raise InvalidAPIUsage('Отсутствует тело запроса')
-    if 'custom_id' not in data or data['custom_id'] == '':
-        short = get_unique_short_id()
+    if 'url' not in data:
+        raise InvalidAPIUsage('"url" является обязательным полем!')
+    if 'custom_id' not in data or data['custom_id'] == '' or data['custom_id'] is None:
+        short_id = get_unique_short_id()
     else:
-        short = data['custom_id']
-    if len(short) > 16:
-        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки') 
-    if URL_map.query.filter_by(short=short).first() is not None:
-        raise InvalidAPIUsage('Эта ссылка уже занята')
-    map = URL_map()
-    data['original'] = data['url']
-    data['short'] = short
-    map.from_dict(data)
-    db.session.add(map)
-    db.session.commit()
-    return jsonify(short_link='http://localhost/'+map.short, url=map.original), 201
+        short_id = data['custom_id']
+    if len(short_id) > 16:
+        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки', 400)
+    if URL_map.query.filter_by(short=short_id).first() is not None:
+        raise InvalidAPIUsage(f'Имя "{short_id}" уже занято.')
+    accord = re.findall(PATTERN, short_id)
+    if ''.join(accord) == short_id:
+        map = URL_map()
+        data['original'] = data['url']
+        data['short'] = short_id
+        map.from_dict(data)
+        db.session.add(map)
+        db.session.commit()
+        return jsonify(short_link='http://localhost/' + map.short, url=map.original), 201
+    else:
+        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки', 400)

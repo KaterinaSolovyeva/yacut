@@ -1,7 +1,7 @@
 from random import sample
 from string import ascii_letters, digits
 
-from flask import abort, flash, redirect, render_template, url_for
+from flask import abort, flash, redirect, render_template
 
 from . import app, db
 from .forms import URL_mapForm
@@ -20,16 +20,20 @@ def get_unique_short_id():
 def index_view():
     form = URL_mapForm()
     if form.validate_on_submit():
-        short_name = form.short.data
+        short_name = form.custom_id.data
         if URL_map.query.filter_by(short=short_name).first():
             flash(f'Имя {short_name} уже занято!')
-            form.short.data = None
+            form.custom_id.data = None
             return render_template('index.html', form=form)
         if short_name is None or short_name == '':
-            form.short.data = get_unique_short_id()
+            form.custom_id.data = get_unique_short_id()
+        if len(form.custom_id.data) > 16:
+            flash('Указано недопустимое имя для короткой ссылки')
+            form.custom_id.data = None
+            return render_template('index.html', form=form)
         url_map = URL_map(
-            original=form.original.data, 
-            short=form.short.data, 
+            original=form.original_link.data,
+            short=form.custom_id.data,
         )
         db.session.add(url_map)
         db.session.commit()

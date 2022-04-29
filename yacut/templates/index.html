@@ -17,22 +17,22 @@
               {{ form.csrf_token }}
               <div>
                 <div>
-                  {{ form.original(class="form-control form-control-lg py-2 mb-3", id="form-title",
-                    placeholder=form.original.label.text) }}
+                  {{ form.original_link(class="form-control form-control-lg py-2 mb-3", id="form-title",
+                    placeholder=form.original_link.label.text) }}
                   <p>
-                    {% if form.original.errors %}
-                      {% for error in form.original.errors %}
+                    {% if form.original_link.errors %}
+                      {% for error in form.original_link.errors %}
                         <span style="color:red">{{ error }}</span>
                       {% endfor %}
                     {% endif %}
                   </p>
                 </div>
                 <div>
-                  {{ form.short(class="form-control form-control-lg py-2 mb-3", id="form-link",
-                    placeholder=form.short.label.text) }}
+                  {{ form.custom_id(class="form-control form-control-lg py-2 mb-3", id="form-link",
+                    placeholder=form.custom_id.label.text) }}
                   <p>
-                    {% if form.short.errors %}
-                      {% for error in form.short.errors %}
+                    {% if form.custom_id.errors %}
+                      {% for error in form.custom_id.errors %}
                         <span style="color:red">{{ error }}</span>
                       {% endfor %}
                     {% endif %} 
@@ -59,10 +59,10 @@
         <div class="row ">
           <div class="col-sm">
           </div>
-          {% if form.short.data %}
+          {% if form.custom_id.data %}
             <div class="col-sm">
               <p class="text-center">
-              <h5 class="text-center">Ваша новая ссылка готова: <br> <a href="{{ url_for('redirection_view', short=form.short.data, _external=True) }}">{{ url_for('redirection_view', short=form.short.data, _external=True) }}</a></h5>
+              <h5 class="text-center">Ваша новая ссылка готова: <br> <a href="{{ url_for('redirection_view', short=form.custom_id.data, _external=True) }}">{{ url_for('redirection_view', short=form.custom_id.data, _external=True) }}</a></h5>
               </p>
             </div>
           {% endif %}
