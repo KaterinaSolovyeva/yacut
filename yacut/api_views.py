@@ -8,7 +8,6 @@ from .models import URL_map
 from .views import get_unique_short_id
 
 
-
 @app.route('/api/id/<string:short_id>/', methods=['GET'])
 def get_original(short_id):
     map = URL_map.query.filter_by(short=short_id).first()
